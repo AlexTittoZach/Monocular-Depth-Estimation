@@ -5,3 +5,4 @@ pillow
 peft
 pyyaml
 numpy
+torchvision
