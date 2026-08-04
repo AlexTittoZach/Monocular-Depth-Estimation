@@ -112,6 +112,13 @@ def predict_depth(input_image: Image.Image, strategy_name: str, colormap: str):
     latency = (time.time() - start) * 1000
 
     depth = prediction.cpu().numpy()
+    print("\n========================")
+    print(strategy_name)
+    print("min :", depth.min())
+    print("max :", depth.max())
+    print("mean:", depth.mean())
+    print("std :", depth.std())
+    print("========================")
     color_depth = colorize_depth(depth, colormap)
 
     card = BENCHMARK_CARDS[strategy_name]
