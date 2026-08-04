@@ -58,11 +58,24 @@ def load_official_checkpoint(model: nn.Module, checkpoint_path: str):
 
     state_dict = torch.load(checkpoint_path, map_location="cpu")
 
-    missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    missing, unexpected = model.load_state_dict(
+        state_dict,
+        strict=False,
+    )
 
-    print(f"[Model Verification] Missing keys: {len(missing)}")
-    print(f"[Model Verification] Unexpected keys: {len(unexpected)}")
-    
+    print(f"\n===== {mode.upper()} CHECKPOINT =====")
+    print(f"Missing keys    : {len(missing)}")
+    print(f"Unexpected keys : {len(unexpected)}")
+
+    if len(missing):
+        print("First missing keys:", missing[:10])
+
+    if len(unexpected):
+        print("First unexpected keys:", unexpected[:10])
+
+
+
+
 def load_model(
     mode: str = "baseline",
     encoder_type: str = "vitl",
@@ -109,8 +122,21 @@ def load_model(
         if checkpoint_path and checkpoint_path != stock_checkpoint:            
             print(f"[Model Loader] Loading fine-tuned decoder checkpoint from: {checkpoint_path}")
             state_dict = torch.load(checkpoint_path, map_location='cpu')
-            model.load_state_dict(state_dict, strict=False)
-            
+        missing, unexpected = model.load_state_dict(
+            state_dict,
+            strict=False,
+        )
+
+        print(f"\n===== {mode.upper()} CHECKPOINT =====")
+        print(f"Missing keys    : {len(missing)}")
+        print(f"Unexpected keys : {len(unexpected)}")
+
+        if len(missing):
+            print("First missing keys:", missing[:10])
+
+        if len(unexpected):
+            print("First unexpected keys:", unexpected[:10])     
+
     elif mode == "lora":
         for p in model.parameters():
             p.requires_grad = False
@@ -130,8 +156,20 @@ def load_model(
             if checkpoint_path and checkpoint_path != stock_checkpoint:
                 print(f"[Model Loader] Loading fine-tuned LoRA checkpoint from: {checkpoint_path}")
                 state_dict = torch.load(checkpoint_path, map_location='cpu')
-                missing, unexpected = model.load_state_dict(state_dict, strict=False)
-                print(f"[LoRA Verification] Loaded fine-tuned LoRA weights! (Missing: {len(missing)}, Unexpected: {len(unexpected)})")
+            missing, unexpected = model.load_state_dict(
+                    state_dict,
+                    strict=False,
+                )
+
+            print(f"\n===== {mode.upper()} CHECKPOINT =====")
+            print(f"Missing keys    : {len(missing)}")
+            print(f"Unexpected keys : {len(unexpected)}")
+
+            if len(missing):
+                print("First missing keys:", missing[:10])
+
+            if len(unexpected):
+                print("First unexpected keys:", unexpected[:10])
 
         except Exception as e:
             print(f"[Warning] Failed to initialize PEFT LoRA: {e}. Falling back to decoder-only mode.")
@@ -145,7 +183,20 @@ def load_model(
         if checkpoint_path and checkpoint_path != stock_checkpoint:            
             print(f"[Model Loader] Loading fine-tuned full model checkpoint from: {checkpoint_path}")
             state_dict = torch.load(checkpoint_path, map_location='cpu')
-            model.load_state_dict(state_dict, strict=False)
+        missing, unexpected = model.load_state_dict(
+            state_dict,
+            strict=False,
+        )
+
+        print(f"\n===== {mode.upper()} CHECKPOINT =====")
+        print(f"Missing keys    : {len(missing)}")
+        print(f"Unexpected keys : {len(unexpected)}")
+
+        if len(missing):
+            print("First missing keys:", missing[:10])
+
+        if len(unexpected):
+            print("First unexpected keys:", unexpected[:10])            
             
     else:
         raise ValueError(f"Invalid mode '{mode}'. Choose from ['baseline', 'decoder', 'lora', 'full']")
