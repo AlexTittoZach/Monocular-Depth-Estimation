@@ -17,10 +17,22 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 LOADED_MODELS = {}
 
 MODEL_CHECKPOINTS = {
-    "Baseline (Pretrained Zero-Shot)": ("baseline", "https://huggingface.co/alextittozach/depth-anything-v2-kitti-models/resolve/main/pretrained/depth_anything_v2_vitl.pth"),
-    "Decoder-Only Fine-Tuned": ("decoder", "https://huggingface.co/alextittozach/depth-anything-v2-kitti-models/resolve/main/finetuned/depth_anything_v2_vitl_decoder.pth"),
-    "LoRA Adapter": ("lora", "https://huggingface.co/alextittozach/depth-anything-v2-kitti-models/resolve/main/finetuned/depth_anything_v2_vitl_lora.pth"),
-    "Full Fine-Tuned": ("full", "https://huggingface.co/alextittozach/depth-anything-v2-kitti-models/resolve/main/finetuned/depth_anything_v2_vitl_full.pth"),
+    "Baseline (Pretrained Zero-Shot)": (
+        "baseline",
+        "pretrained/depth_anything_v2_vitl.pth",
+    ),
+    "Decoder-Only Fine-Tuned": (
+        "decoder",
+        "finetuned/depth_anything_v2_vitl_decoder.pth",
+    ),
+    "LoRA Adapter": (
+        "lora",
+        "finetuned/depth_anything_v2_vitl_lora.pth",
+    ),
+    "Full Fine-Tuned": (
+        "full",
+        "finetuned/depth_anything_v2_vitl_full.pth",
+    ),
 }
 
 BENCHMARK_CARDS = {
