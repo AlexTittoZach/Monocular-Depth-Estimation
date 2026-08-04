@@ -3,6 +3,7 @@ import os
 import torch
 import torch.nn as nn
 from typing import Tuple, Dict, Any
+from huggingface_hub import hf_hub_download
 
 # Add external Depth-Anything-V2 to python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../external/Depth-Anything-V2")))
@@ -16,27 +17,52 @@ MODEL_CONFIGS = {
 
 import pathlib
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+MODEL_REPO = "alextittozach/depth-anything-v2-kitti-models"
+
 DEFAULT_CHECKPOINTS = {
-    'vits': str(PROJECT_ROOT / 'checkpoints' / 'pretrained' / 'depth_anything_v2_vits.pth'),
-    'vitb': str(PROJECT_ROOT / 'checkpoints' / 'pretrained' / 'depth_anything_v2_vitb.pth'),
-    'vitl': str(PROJECT_ROOT / 'checkpoints' / 'pretrained' / 'depth_anything_v2_vitl.pth'),
+    "vitl": "pretrained/depth_anything_v2_vitl.pth",
 }
+
+
+def resolve_checkpoint(checkpoint_path: str) -> str:
+    """
+    Resolve either:
+      - a local checkpoint
+      - or a Hugging Face Hub checkpoint
+    """
+
+    if checkpoint_path is None:
+        return None
+
+    # Local file
+    if os.path.isfile(checkpoint_path):
+        print(f"[Checkpoint] Using local file: {checkpoint_path}")
+        return checkpoint_path
+
+    # Download from Hugging Face
+    print(f"[Checkpoint] Downloading '{checkpoint_path}' from {MODEL_REPO}")
+
+    return hf_hub_download(
+        repo_id=MODEL_REPO,
+        filename=checkpoint_path,
+        repo_type="model",
+    )
+
 
 def load_official_checkpoint(model: nn.Module, checkpoint_path: str):
     """
-    Loads official pretrained checkpoint and verifies state dict key alignment.
+    Load the official pretrained checkpoint.
     """
-    if not os.path.exists(checkpoint_path):
-        print(f"[Warning] Official checkpoint not found at '{checkpoint_path}'. Skipping loading.")
-        return
-        
-    print(f"[Model Loader] Loading official checkpoint from: {checkpoint_path}")
-    state_dict = torch.load(checkpoint_path, map_location='cpu')
-    
-    missing, unexpected = model.load_state_dict(state_dict, strict=False)
-    print(f"[Model Verification] Missing keys: {len(missing)} | {missing}")
-    print(f"[Model Verification] Unexpected keys: {len(unexpected)} | {unexpected}")
+    print(f"[Model Loader] Loading official checkpoint: {checkpoint_path}")
 
+    state_dict = torch.load(checkpoint_path, map_location="cpu")
+
+    missing, unexpected = model.load_state_dict(state_dict, strict=False)
+
+    print(f"[Model Verification] Missing keys: {len(missing)}")
+    print(f"[Model Verification] Unexpected keys: {len(unexpected)}")
+    
 def load_model(
     mode: str = "baseline",
     encoder_type: str = "vitl",
@@ -54,16 +80,17 @@ def load_model(
     config = MODEL_CONFIGS[encoder_type]
     model = DepthAnythingV2(**config)
     
-    stock_checkpoint = DEFAULT_CHECKPOINTS.get(encoder_type, 'checkpoints/pretrained/depth_anything_v2_vitl.pth')
+    if encoder_type not in DEFAULT_CHECKPOINTS:
+        raise ValueError(f"No default checkpoint configured for '{encoder_type}'")
 
-    if checkpoint_path and os.path.exists(checkpoint_path): 
-        stock_checkpoint = checkpoint_path
+    # Download (or use cached) official pretrained checkpoint
+    stock_checkpoint = resolve_checkpoint(DEFAULT_CHECKPOINTS[encoder_type])
 
-    # 1. Load official stock weights first into base architecture, if it exists
-    if os.path.exists(stock_checkpoint):
-        load_official_checkpoint(model, stock_checkpoint)
-    else:
-        print(f"[Warning] Official checkpoint not found at '{stock_checkpoint}'. Skipping loading.")
+    #Resolve experiment checkpoint if one was supplied
+    if checkpoint_path is not None:
+        checkpoint_path = resolve_checkpoint(checkpoint_path)
+
+    load_official_checkpoint(model, stock_checkpoint)
     
     # 2. Configure experiment mode
     if mode == "baseline":
@@ -79,7 +106,7 @@ def load_model(
         print("[Experiment Config] Decoder-Only Mode: Encoder frozen, DPT Depth Head unfrozen.")
         
         # If fine-tuned checkpoint provided, load fine-tuned weights
-        if checkpoint_path and checkpoint_path != stock_checkpoint and os.path.exists(checkpoint_path):
+        if checkpoint_path and checkpoint_path != stock_checkpoint:            
             print(f"[Model Loader] Loading fine-tuned decoder checkpoint from: {checkpoint_path}")
             state_dict = torch.load(checkpoint_path, map_location='cpu')
             model.load_state_dict(state_dict, strict=False)
@@ -100,7 +127,7 @@ def load_model(
             print(f"[Experiment Config] LoRA Mode: Injected adapters (r={lora_r}, alpha={lora_alpha}). Base model frozen.")
 
             # If fine-tuned checkpoint provided, load fine-tuned LoRA weights
-            if checkpoint_path and checkpoint_path != stock_checkpoint and os.path.exists(checkpoint_path):
+            if checkpoint_path and checkpoint_path != stock_checkpoint:
                 print(f"[Model Loader] Loading fine-tuned LoRA checkpoint from: {checkpoint_path}")
                 state_dict = torch.load(checkpoint_path, map_location='cpu')
                 missing, unexpected = model.load_state_dict(state_dict, strict=False)
@@ -115,7 +142,7 @@ def load_model(
         for p in model.parameters():
             p.requires_grad = True
         print("[Experiment Config] Full Fine-Tuning Mode: 100% of parameters unfrozen.")
-        if checkpoint_path and checkpoint_path != stock_checkpoint and os.path.exists(checkpoint_path):
+        if checkpoint_path and checkpoint_path != stock_checkpoint:            
             print(f"[Model Loader] Loading fine-tuned full model checkpoint from: {checkpoint_path}")
             state_dict = torch.load(checkpoint_path, map_location='cpu')
             model.load_state_dict(state_dict, strict=False)
