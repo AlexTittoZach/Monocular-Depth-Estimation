@@ -1,0 +1,15 @@
+experiment_id: "EXP_03_LORA"
+mode: "lora"
+encoder_type: "vitl"
+checkpoint_path: "checkpoints/pretrained/depth_anything_v2_vitl.pth"
+output_dir: "checkpoints/finetuned"
+data_dir: "datasets/kitti"
+
+lora_r: 16                      
+lora_alpha: 32
+
+epochs: 5
+batch_size: 8
+learning_rate: 0.0003
+weight_decay: 0.01
+num_workers: 4
