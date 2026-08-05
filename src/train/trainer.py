@@ -16,14 +16,14 @@ from src.models.losses import CombinedDepthLoss
 from src.utils.metrics import compute_depth_metrics, count_parameters
 
 # Enable TF32 & Cap GPU VRAM Memory to 74% (35.0 GB max out of 48 GB)
-if torch.cuda.is_available():
-    torch.set_float32_matmul_precision('high')
-    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
-    try:
-        torch.cuda.set_per_process_memory_fraction(0.74, 0)
-        print("[GPU Config] Capped PyTorch VRAM memory fraction to 74% (35.0 GB max).")
-    except Exception as e:
-        print(f"[GPU Config Warning] Could not set memory fraction: {e}")
+#if torch.cuda.is_available():
+#    torch.set_float32_matmul_precision('high')
+#    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+#    try:
+#        torch.cuda.set_per_process_memory_fraction(0.74, 0)
+#        print("[GPU Config] Capped PyTorch VRAM memory fraction to 74% (35.0 GB max).")
+#    except Exception as e:
+#        print(f"[GPU Config Warning] Could not set memory fraction: {e}")
 
 class DepthTrainer:
     """

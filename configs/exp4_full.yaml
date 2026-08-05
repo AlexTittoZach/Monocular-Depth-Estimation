@@ -1,7 +1,7 @@
 experiment_id: "EXP_04_FULL_FT"
 mode: "full"
 encoder_type: "vitl"
-checkpoint_path: "checkpoints/pretrained/depth_anything_v2_vitl.pth"
+checkpoint_path: "pretrained/depth_anything_v2_vitl.pth"
 output_dir: "checkpoints/finetuned"
 data_dir: "/kaggle/working/kitti"
 
