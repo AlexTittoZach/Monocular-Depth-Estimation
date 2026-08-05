@@ -3,7 +3,7 @@ mode: "lora"
 encoder_type: "vitl"
 checkpoint_path: "checkpoints/pretrained/depth_anything_v2_vitl.pth"
 output_dir: "checkpoints/finetuned"
-data_dir: "/kaggle/input/datasets/alextitto/kitti-rgb-depth-20k-subset"
+data_dir: "/kaggle/working/kitti"
 
 lora_r: 16                      
 lora_alpha: 32
