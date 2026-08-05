@@ -159,14 +159,25 @@ class DepthTrainer:
 
             # Dynamic config check: stop cleanly if target epochs changed in config
             try:
-                config_file = f"configs/exp4_full.yaml" if self.mode == "full" else f"configs/exp2_decoder.yaml"
-                if os.path.exists(config_file):
-                    with open(config_file, 'r') as f:
+                if self.mode == "decoder":
+                    config_file = "configs/exp2_decoder.yaml"
+                elif self.mode == "lora":
+                    config_file = "configs/exp3_lora.yaml"
+                elif self.mode == "full":
+                    config_file = "configs/exp4_full.yaml"
+                else:
+                    config_file = None
+
+                if config_file and os.path.exists(config_file):
+                    with open(config_file, "r") as f:
                         disk_cfg = yaml.safe_load(f)
-                    max_target = disk_cfg.get('epochs', epochs)
+
+                    max_target = disk_cfg.get("epochs", epochs)
+
                     if epoch >= max_target:
                         print(f"\n⏹️ Reached target of {max_target} epochs requested in config. Stopping training cleanly!")
                         break
+
             except Exception:
                 pass
 
