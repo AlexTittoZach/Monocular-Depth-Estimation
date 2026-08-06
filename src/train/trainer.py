@@ -1,3 +1,5 @@
+from huggingface_hub import HfApi
+from kaggle_secrets import UserSecretsClient
 import os
 import sys
 import time
@@ -151,11 +153,31 @@ class DepthTrainer:
 
             print(f"  Epoch {epoch}/{epochs} ({epoch_time_s:.1f}s) | Train Loss: {train_loss:.4f} | Val RMSE: {val_rmse:.4f}m | Abs Rel: {val_abs_rel:.4f} | Delta1: {val_delta1:.4f}")
 
-            # Save best checkpoint if RMSE improves
             if val_rmse < best_rmse:
                 best_rmse = val_rmse
                 torch.save(self.model.state_dict(), best_ckpt_path)
-                print(f"  💾 Saved Best Model Checkpoint to: {best_ckpt_path}")
+
+                # Upload checkpoint to Hugging Face
+                try:
+                    user_secrets = UserSecretsClient()
+                    HF_TOKEN = user_secrets.get_secret("HF_TOKEN")
+
+                    api = HfApi()
+
+                    api.upload_file(
+                        path_or_fileobj=best_ckpt_path,
+                        path_in_repo=f"finetuned/{os.path.basename(best_ckpt_path)}",
+                        repo_id="alextittozach/depth-anything-v2-kitti-models",
+                        repo_type="model",
+                        token=HF_TOKEN,
+                    )
+
+                    print(f"✅ Uploaded {os.path.basename(best_ckpt_path)} to Hugging Face.")
+
+                except Exception as e:
+                    print(f"⚠️ Hugging Face upload failed: {e}")
+
+                print(f"💾 Saved Best Model Checkpoint to: {best_ckpt_path}")
 
             # Dynamic config check: stop cleanly if target epochs changed in config
             try:
