@@ -1,3 +1,5 @@
+from huggingface_hub import HfApi
+from kaggle_secrets import UserSecretsClient
 import os
 import sys
 import argparse
@@ -78,7 +80,55 @@ def main():
     save_experiment_results(cfg['experiment_id'], eval_results)
     generate_markdown_report()
 
-    print("\n🎉 Fine-Tuning & Comparative Evaluation Completed Successfully!")
+    try:
+        user_secrets = UserSecretsClient()
+        HF_TOKEN = user_secrets.get_secret("HF_TOKEN")
+
+        api = HfApi()
+
+        output_dir = "outputs/logs"
+
+        files_to_upload = [
+            f"{cfg['experiment_id']}_results.json",
+            "benchmark_summary.csv",
+            "benchmark_report.md",
+        ]
+
+        for file in files_to_upload:
+            local_path = os.path.join(output_dir, file)
+
+            if os.path.exists(local_path):
+                api.upload_file(
+                    path_or_fileobj=local_path,
+                    path_in_repo=f"logs/{file}",
+                    repo_id="alextittozach/depth-anything-v2-kitti-models",
+                    repo_type="model",
+                    token=HF_TOKEN,
+                )
+                print(f"✅ Uploaded {file}")
+
+    except Exception as e:
+        print(f"⚠️ Failed to upload logs: {e}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    print("\nFine-Tuning & Comparative Evaluation Completed Successfully!")
 
 if __name__ == "__main__":
     main()
