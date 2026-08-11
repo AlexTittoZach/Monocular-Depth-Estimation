@@ -6,7 +6,7 @@ output_dir: "checkpoints/finetuned"
 data_dir: "/home/inicai/depth-anything-v2-vitl/datasets/kitti"
 
 epochs: 3
-batch_size: 2
+batch_size: 4
 learning_rate: 0.00005
 weight_decay: 0.01
 num_workers: 4
