@@ -116,7 +116,7 @@ def predict_depth(input_image: Image.Image, strategy_name: str, colormap: str):
     color_depth = colorize_depth(depth, colormap)
 
 
-    return color_depth, stats
+    return color_depth, f"**Inference Latency:** {latency:.2f} ms"
 
 
 with gr.Blocks(title="Depth Anything V2 Benchmark Suite") as demo:
