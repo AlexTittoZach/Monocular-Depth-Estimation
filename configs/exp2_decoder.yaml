@@ -3,10 +3,10 @@ mode: "decoder"
 encoder_type: "vitl"
 checkpoint_path: "pretrained/depth_anything_v2_vitl.pth"
 output_dir: "checkpoints/finetuned"
-data_dir: "/kaggle/working/kitti"
+data_dir: "/home/inicai/depth-anything-v2-vitl/datasets/kitti"
 
 epochs: 5
-batch_size: 8
+batch_size: 4
 learning_rate: 0.0001
 weight_decay: 0.01
 num_workers: 4

@@ -1,6 +1,10 @@
 from huggingface_hub import HfApi
-from kaggle_secrets import UserSecretsClient
 import os
+try:
+    from kaggle_secrets import UserSecretsClient
+except ImportError:
+    UserSecretsClient = None
+    
 import sys
 import argparse
 import yaml
@@ -81,8 +85,11 @@ def main():
     generate_markdown_report()
 
     try:
-        user_secrets = UserSecretsClient()
-        HF_TOKEN = user_secrets.get_secret("HF_TOKEN")
+        if UserSecretsClient is not None:
+            user_secrets = UserSecretsClient()
+            HF_TOKEN = user_secrets.get_secret("HF_TOKEN")
+        else:
+            HF_TOKEN = os.getenv("HF_TOKEN")
 
         api = HfApi()
 
@@ -109,23 +116,6 @@ def main():
 
     except Exception as e:
         print(f"⚠️ Failed to upload logs: {e}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     print("\nFine-Tuning & Comparative Evaluation Completed Successfully!")

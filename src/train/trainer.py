@@ -1,6 +1,11 @@
 from huggingface_hub import HfApi
-from kaggle_secrets import UserSecretsClient
 import os
+
+try:
+    from kaggle_secrets import UserSecretsClient
+except ImportError:
+    UserSecretsClient = None
+
 import sys
 import time
 import yaml
@@ -18,14 +23,14 @@ from src.models.losses import CombinedDepthLoss
 from src.utils.metrics import compute_depth_metrics, count_parameters
 
 # Enable TF32 & Cap GPU VRAM Memory to 74% (35.0 GB max out of 48 GB)
-#if torch.cuda.is_available():
-#    torch.set_float32_matmul_precision('high')
-#    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
-#    try:
-#        torch.cuda.set_per_process_memory_fraction(0.74, 0)
-#        print("[GPU Config] Capped PyTorch VRAM memory fraction to 74% (35.0 GB max).")
-#    except Exception as e:
-#        print(f"[GPU Config Warning] Could not set memory fraction: {e}")
+if torch.cuda.is_available():
+    torch.set_float32_matmul_precision('high')
+    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+    try:
+        torch.cuda.set_per_process_memory_fraction(0.74, 0)
+        print("[GPU Config] Capped PyTorch VRAM memory fraction to 74% (35.0 GB max).")
+    except Exception as e:
+        print(f"[GPU Config Warning] Could not set memory fraction: {e}")
 
 class DepthTrainer:
     """
@@ -159,9 +164,11 @@ class DepthTrainer:
 
                 # Upload checkpoint to Hugging Face
                 try:
-                    user_secrets = UserSecretsClient()
-                    HF_TOKEN = user_secrets.get_secret("HF_TOKEN")
-
+                    if UserSecretsClient is not None:
+                        user_secrets = UserSecretsClient()
+                        HF_TOKEN = user_secrets.get_secret("HF_TOKEN")
+                    else:
+                        HF_TOKEN = os.getenv("HF_TOKEN")
                     api = HfApi()
 
                     api.upload_file(
