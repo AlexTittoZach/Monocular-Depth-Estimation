@@ -32,15 +32,9 @@ MODEL_CHECKPOINTS = {
     "Full Fine-Tuned": (
         "full",
         "finetuned/depth_anything_v2_vitl_full.pth",
-    ),
+    )
 }
 
-BENCHMARK_CARDS = {
-    "Baseline (Pretrained Zero-Shot)": {"rmse": "13.0638 m", "abs_rel": "0.4153 (41.5%)", "delta1": "0.3236 (32.4%)", "params": "0 (0.00%)"},
-    "Decoder-Only Fine-Tuned": {"rmse": "12.7243 m", "abs_rel": "0.4280 (42.8%)", "delta1": "0.3040 (30.4%)", "params": "30.9M (9.23%)"},
-    "LoRA Adapter": {"rmse": "1.9710 m 🚀", "abs_rel": "0.0373 (3.73%)", "delta1": "0.9884 (98.8%)", "params": "2.38M (0.71%)"},
-    "Full Fine-Tuned": {"rmse": "12.7243 m", "abs_rel": "0.4280 (42.8%)", "delta1": "0.3040 (30.4%)", "params": "335.3M (100.0%)"},
-}
 
 def get_model(strategy_name: str):
     if strategy_name in LOADED_MODELS:
@@ -121,18 +115,6 @@ def predict_depth(input_image: Image.Image, strategy_name: str, colormap: str):
     print("========================")
     color_depth = colorize_depth(depth, colormap)
 
-    card = BENCHMARK_CARDS[strategy_name]
-
-    stats = f"""
-### 📊 Selected Strategy: **{strategy_name}**
-
-- **Validation RMSE:** `{card['rmse']}`
-- **Abs Rel Error:** `{card['abs_rel']}`
-- **Delta1 Accuracy:** `{card['delta1']}`
-- **Trainable Parameters:** `{card['params']}`
-- **Inference Latency:** `{latency:.2f} ms`
-- **FPS:** `{1000/latency:.2f}`
-"""
 
     return color_depth, stats
 

@@ -3,6 +3,7 @@ import os
 import torch
 import torch.nn as nn
 from typing import Tuple, Dict, Any
+
 from huggingface_hub import hf_hub_download
 
 # Add external Depth-Anything-V2 to python path
