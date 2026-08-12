@@ -192,4 +192,4 @@ Compare zero-shot, decoder-only, LoRA, and full fine-tuning models.
 
 
 if __name__ == "__main__":
-    demo.queue().launch()
+    demo.queue().launch(show_api=False)
