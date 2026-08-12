@@ -1,0 +1,20 @@
+{
+    "experiment_id": "EXP_02_DECODER_ONLY",
+    "mode": "decoder",
+    "encoder": "vitl",
+    "total_params": 335315649,
+    "trainable_params": 30947009,
+    "trainable_percent": 9.23,
+    "checkpoint_size_mb": 1279.13,
+    "peak_vram_gb": 3.106,
+    "training_time_per_epoch_s": "N/A",
+    "total_training_time_min": "N/A",
+    "latency_ms": 45.83,
+    "throughput_fps": 21.8,
+    "abs_rel": 0.428,
+    "rmse": 12.7243,
+    "rmse_log": 0.5954,
+    "delta1": 0.304,
+    "delta2": 0.5756,
+    "delta3": 0.7788
+}

@@ -1,0 +1,22 @@
+{
+    "experiment_id": "BASELINE_DEPTH_ANYTHING_V2",
+    "model": "Depth Anything V2 ViT-L",
+    "mode": "baseline",
+    "encoder_type": "vitl",
+    "checkpoint": "pretrained/depth_anything_v2_vitl.pth",
+    "dataset": "/home/inicai/depth-anything-v2-vitl/datasets/kitti",
+    "split": "val",
+    "num_samples": 2073,
+    "batch_size": 8,
+    "target_size": [
+        378,
+        504
+    ],
+    "evaluation_time_seconds": 128.14510488510132,
+    "abs_rel": 0.5584573147704334,
+    "rmse": 18.51183844233732,
+    "rmse_log": 0.4634564816017284,
+    "delta1": 0.4847666561407867,
+    "delta2": 0.7599251680338818,
+    "delta3": 0.875575900591067
+}

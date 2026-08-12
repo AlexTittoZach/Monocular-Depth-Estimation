@@ -1,0 +1,20 @@
+{
+    "experiment_id": "EXP_03_LORA",
+    "mode": "lora",
+    "encoder": "vitl",
+    "total_params": 337700737,
+    "trainable_params": 2385088,
+    "trainable_percent": 0.71,
+    "checkpoint_size_mb": 1288.23,
+    "peak_vram_gb": 2.826,
+    "training_time_per_epoch_s": "N/A",
+    "total_training_time_min": "N/A",
+    "latency_ms": 51.1,
+    "throughput_fps": 19.6,
+    "abs_rel": 0.0356,
+    "rmse": 1.8764,
+    "rmse_log": 0.0595,
+    "delta1": 0.9893,
+    "delta2": 0.9983,
+    "delta3": 0.9994
+}

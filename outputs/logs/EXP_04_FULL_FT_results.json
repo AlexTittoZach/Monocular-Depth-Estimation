@@ -1,0 +1,24 @@
+{
+    "experiment_id": "EXP_04_FULL_FT",
+    "model": "Depth Anything V2 ViT-L",
+    "mode": "full",
+    "encoder_type": "vitl",
+    "checkpoint": "checkpoints/finetuned/depth_anything_v2_vitl_full.pth",
+    "dataset": "/home/inicai/depth-anything-v2-vitl/datasets/kitti",
+    "split": "val",
+    "num_samples": 2073,
+    "batch_size": 8,
+    "target_size": [
+        378,
+        504
+    ],
+    "evaluation_time_seconds": 129.04522585868835,
+    "metrics": {
+        "abs_rel": 0.044812292929826816,
+        "rmse": 2.247715435250048,
+        "rmse_log": 0.07416484816007952,
+        "delta1": 0.9793592833370447,
+        "delta2": 0.9969020180491299,
+        "delta3": 0.9990974812199434
+    }
+}
