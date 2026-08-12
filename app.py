@@ -51,9 +51,17 @@ def get_model(strategy_name: str):
     LOADED_MODELS[strategy_name] = model
     return model
 
-def colorize_depth(depth: np.ndarray, colormap: str = "inferno") -> np.ndarray:
-    d_min, d_max = depth.min(), depth.max()
-    norm_depth = (depth - d_min) / (d_max - d_min + 1e-8)
+def colorize_depth(depth: np.ndarray, is_metric: bool = False, colormap: str = "inferno") -> np.ndarray:
+    p2, p98 = np.percentile(depth, 2), np.percentile(depth, 98)
+    if is_metric:
+        # Metric depth in meters (small = near, large = far)
+        # Near (p2) -> 1.0 (bright), Far (p98) -> 0.0 (dark)
+        norm_depth = 1.0 - np.clip((depth - p2) / (p98 - p2 + 1e-8), 0.0, 1.0)
+    else:
+        # Relative disparity (large = near, small = far)
+        # Near (p98) -> 1.0 (bright), Far (p2) -> 0.0 (dark)
+        norm_depth = np.clip((depth - p2) / (p98 - p2 + 1e-8), 0.0, 1.0)
+
     norm_depth_uint8 = (norm_depth * 255).astype(np.uint8)
 
     cmap_dict = {
@@ -114,10 +122,9 @@ def predict_depth(input_image: Image.Image, strategy_name: str, colormap: str):
     print("std :", depth.std())
     print("========================")
 
-    if strategy_name != "Baseline (Pretrained Zero-Shot)":
-        # Fine-tuned models output metric depth in meters (small = near, large = far).
-        # Convert to inverse depth (disparity space) so colorization maps near -> bright, far -> dark.
-        vis_depth = 1.0 / (np.clip(depth, 0.1, 80.0))
+    is_metric = (strategy_name != "Baseline (Pretrained Zero-Shot)")
+
+    if is_metric:
         metrics_text = (
             f"**Inference Latency:** {latency:.2f} ms\n\n"
             f"**Mode:** Metric Depth (KITTI Fine-Tuned)\n"
@@ -126,14 +133,12 @@ def predict_depth(input_image: Image.Image, strategy_name: str, colormap: str):
             f"- **Mean Distance:** {depth.mean():.2f} m"
         )
     else:
-        # Zero-shot baseline outputs relative disparity (large = near, small = far).
-        vis_depth = depth
         metrics_text = (
             f"**Inference Latency:** {latency:.2f} ms\n\n"
             f"**Mode:** Relative Depth (Zero-Shot Baseline)"
         )
 
-    color_depth = colorize_depth(vis_depth, colormap)
+    color_depth = colorize_depth(depth, is_metric=is_metric, colormap=colormap)
 
     return color_depth, metrics_text
 
