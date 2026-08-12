@@ -89,7 +89,17 @@ def predict_depth(input_image: Image.Image, strategy_name: str, colormap: str):
     orig_w, orig_h = input_image.size
     img_np = np.array(input_image.convert("RGB"))
 
-    resized = cv2.resize(img_np, (504, 378))
+    # Dynamically preserve native aspect ratio and resolution (multiples of 14)
+    target_w = int(round(orig_w / 14)) * 14
+    target_h = int(round(orig_h / 14)) * 14
+
+    # Cap max dimension to 1246 to prevent OOM on huge images
+    if max(target_w, target_h) > 1246:
+        scale = 1246 / max(target_w, target_h)
+        target_w = max(14, int(round((target_w * scale) / 14)) * 14)
+        target_h = max(14, int(round((target_h * scale) / 14)) * 14)
+
+    resized = cv2.resize(img_np, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
 
     img_tensor = torch.from_numpy(resized).float().permute(2, 0, 1) / 255.0
 
