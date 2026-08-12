@@ -113,10 +113,29 @@ def predict_depth(input_image: Image.Image, strategy_name: str, colormap: str):
     print("mean:", depth.mean())
     print("std :", depth.std())
     print("========================")
-    color_depth = colorize_depth(depth, colormap)
 
+    if strategy_name != "Baseline (Pretrained Zero-Shot)":
+        # Fine-tuned models output metric depth in meters (small = near, large = far).
+        # Convert to inverse depth (disparity space) so colorization maps near -> bright, far -> dark.
+        vis_depth = 1.0 / (np.clip(depth, 0.1, 80.0))
+        metrics_text = (
+            f"**Inference Latency:** {latency:.2f} ms\n\n"
+            f"**Mode:** Metric Depth (KITTI Fine-Tuned)\n"
+            f"- **Min Distance:** {depth.min():.2f} m\n"
+            f"- **Max Distance:** {depth.max():.2f} m\n"
+            f"- **Mean Distance:** {depth.mean():.2f} m"
+        )
+    else:
+        # Zero-shot baseline outputs relative disparity (large = near, small = far).
+        vis_depth = depth
+        metrics_text = (
+            f"**Inference Latency:** {latency:.2f} ms\n\n"
+            f"**Mode:** Relative Depth (Zero-Shot Baseline)"
+        )
 
-    return color_depth, f"**Inference Latency:** {latency:.2f} ms"
+    color_depth = colorize_depth(vis_depth, colormap)
+
+    return color_depth, metrics_text
 
 
 with gr.Blocks(title="Depth Anything V2 Benchmark Suite") as demo:
