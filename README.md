@@ -7,7 +7,6 @@
 
 
 yaml metadata for hf space
----
 title: Depth Anything V2 ViTL
 emoji: 🌊
 colorFrom: blue
@@ -17,4 +16,4 @@ sdk_version: 4.44.1
 python_version: "3.12"
 app_file: app.py
 pinned: false
----
+
