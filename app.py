@@ -9,10 +9,9 @@ import gradio as gr
 import spaces
 from PIL import Image
 
-# Fix Gradio 4.x/5.x OpenAPI schema parser crash on boolean schemas (e.g. additionalProperties: False)
+# Fix Gradio 4.x/5.x OpenAPI schema parser crash on boolean schemas
 try:
     import gradio_client.utils as gradio_client_utils
-
     _orig_get_type = getattr(gradio_client_utils, "get_type", None)
     _orig_json_schema = getattr(gradio_client_utils, "_json_schema_to_python_type", None)
 
@@ -33,6 +32,30 @@ try:
                 return "Any"
             return _orig_json_schema(schema, defs)
         gradio_client_utils._json_schema_to_python_type = _safe_json_schema_to_python_type
+except Exception:
+    pass
+
+# Fix Starlette 0.38+ / FastAPI 0.112+ breaking change with Gradio 4.x TemplateResponse signature
+try:
+    from starlette.templating import Jinja2Templates
+
+    _orig_template_response = Jinja2Templates.TemplateResponse
+
+    def _fixed_template_response(self, *args, **kwargs):
+        # If called as TemplateResponse(name, context_dict) by Gradio 4:
+        if len(args) >= 2 and isinstance(args[0], str) and isinstance(args[1], dict):
+            name = args[0]
+            context = args[1]
+            request = context.get("request")
+            if request is not None:
+                try:
+                    # Try modern Starlette >=0.38 signature: TemplateResponse(request, name, context)
+                    return _orig_template_response(self, request, name, context, **kwargs)
+                except TypeError:
+                    pass
+        return _orig_template_response(self, *args, **kwargs)
+
+    Jinja2Templates.TemplateResponse = _fixed_template_response
 except Exception:
     pass
 

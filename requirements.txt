@@ -6,3 +6,5 @@ peft
 pyyaml
 numpy
 torchvision
+starlette<0.38.0
+fastapi<0.112.0
