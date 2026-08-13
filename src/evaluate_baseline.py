@@ -36,7 +36,7 @@ from src.utils.helpers import (
 
 EXPERIMENT_ID = "BASELINE_DEPTH_ANYTHING_V2"
 
-DATA_DIR = "/home/inicai/depth-anything-v2-vitl/datasets/kitti"
+DATA_DIR = "/path to/depth-anything-v2-vitl/datasets/kitti"
 
 CHECKPOINT_PATH = "pretrained/depth_anything_v2_vitl.pth"
 

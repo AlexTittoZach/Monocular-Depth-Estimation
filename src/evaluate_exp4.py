@@ -44,7 +44,7 @@ CHECKPOINT_PATH = (
 )
 
 DATA_DIR = (
-    "/home/inicai/depth-anything-v2-vitl/"
+    "/path to/depth-anything-v2-vitl/"
     "datasets/kitti"
 )
 

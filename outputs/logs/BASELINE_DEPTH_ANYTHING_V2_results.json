@@ -4,7 +4,7 @@
     "mode": "baseline",
     "encoder_type": "vitl",
     "checkpoint": "pretrained/depth_anything_v2_vitl.pth",
-    "dataset": "/home/inicai/depth-anything-v2-vitl/datasets/kitti",
+    "dataset": "/path to/depth-anything-v2-vitl/datasets/kitti",
     "split": "val",
     "num_samples": 2073,
     "batch_size": 8,
