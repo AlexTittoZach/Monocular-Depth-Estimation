@@ -9,6 +9,33 @@ import gradio as gr
 import spaces
 from PIL import Image
 
+# Fix Gradio 4.x/5.x OpenAPI schema parser crash on boolean schemas (e.g. additionalProperties: False)
+try:
+    import gradio_client.utils as gradio_client_utils
+
+    _orig_get_type = getattr(gradio_client_utils, "get_type", None)
+    _orig_json_schema = getattr(gradio_client_utils, "_json_schema_to_python_type", None)
+
+    if _orig_get_type:
+        def _safe_get_type(schema):
+            if isinstance(schema, bool):
+                return "bool"
+            if not isinstance(schema, dict):
+                return "Any"
+            return _orig_get_type(schema)
+        gradio_client_utils.get_type = _safe_get_type
+
+    if _orig_json_schema:
+        def _safe_json_schema_to_python_type(schema, defs=None):
+            if isinstance(schema, bool):
+                return "bool"
+            if not isinstance(schema, dict):
+                return "Any"
+            return _orig_json_schema(schema, defs)
+        gradio_client_utils._json_schema_to_python_type = _safe_json_schema_to_python_type
+except Exception:
+    pass
+
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from src.models.depth_anything import load_model
 
@@ -192,4 +219,4 @@ Compare zero-shot, decoder-only, LoRA, and full fine-tuning models.
 
 
 if __name__ == "__main__":
-    demo.queue().launch(show_api=False)
+    demo.queue().launch(server_name="0.0.0.0", server_port=7860, show_api=False)

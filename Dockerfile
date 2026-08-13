@@ -7,8 +7,7 @@ COPY Monocular-Depth-Estimation/requirements.txt ./requirements.txt
 
 # Install dependencies with explicit limits
 RUN pip install --no-cache-dir -r requirements.txt \
-    "gradio==4.45.2" \
-    "gradio-client>=2.0,<3.0" \
+    "gradio==4.44.1" \
     "torch<=2.11.0" \
     "uvicorn>=0.14.0" \
     "websockets>=10.4" \
