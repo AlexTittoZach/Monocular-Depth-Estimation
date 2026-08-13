@@ -1,13 +1,22 @@
- # Ignore any large checkpoint files
-    checkpoints/**/*.pth
-    
-    # Specific large assets that exceed HF 10 MiB limit
-    external/Depth-Anything-V2/assets/teaser.png
-    external/Depth-Anything-V2/metric_depth/dataset/splits/hypersim/train.txt
+# Ignore all heavy model weights and checkpoints
+*.pth
+*.pt
+*.bin
+*.ckpt
+pretrained/
+finetuned/
+checkpoints/
+
+# Virtual environment and cache
 .venv/
-.venv/
-.venv/
+venv/
 __pycache__/
 *.pyc
-Monocular-Depth-Estimation/
+
+# Datasets and heavy data
+datasets/
+data/
 *.png
+
+# Submodule/cloned space dirs
+Monocular-Depth-Estimation/
