@@ -3,7 +3,7 @@
 > [!NOTE]
 > **Dataset and Domain Specification**: All fine-tuned models in this study were trained and evaluated exclusively on the **KITTI Vision Benchmark Dataset** (real-world outdoor autonomous driving scenes with sparse LiDAR ground-truth depth spanning **0.1 meters to 80.0 meters**).
 
-## For training I used Nvidia RTX A6000 48 GB vram gpu.
+## For training I used Nvidia RTX A6000 48 GB vram gpu. Ran 5 epochs for all experiments except full param fine tuning (3 epochs). All locally.
 
 ## Among KITTI 20,734 pairs: 
         18,661 depth/rgb pairs for training
