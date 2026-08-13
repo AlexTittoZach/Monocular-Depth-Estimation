@@ -1,4 +1,4 @@
-huggingface_hub>=0.28.1
+huggingface_hub==0.25.2
 spaces
 opencv-python-headless
 pillow
