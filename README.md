@@ -1,5 +1,3 @@
-## CHECKOUT THE conclusion.md for in-depth analysis and outcome of research conducted.
-
 ---
 title: Depth Anything V2 ViTL
 emoji: 🌊
